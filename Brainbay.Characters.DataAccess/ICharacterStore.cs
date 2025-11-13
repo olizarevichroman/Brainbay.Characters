@@ -1,8 +1,10 @@
+using Brainbay.Characters.DataAccess.Models;
+
 namespace Brainbay.Characters.DataAccess;
 
 public interface ICharacterStore
 {
-    Task RegisterCharactersAsync();
+    Task RegisterCharacterAsync(RegisterCharacterRequest request);
 
-    Task GetCharactersAsync();
+    Task<GetCharactersResponse> GetCharactersAsync();
 }
