@@ -1,12 +1,34 @@
 using System.Data.Common;
+using Brainbay.Characters.DataAccess.Options;
 using MySql.Data.MySqlClient;
 
 namespace Brainbay.Characters.DataAccess;
 
-public sealed class MySqlConnectionFactory(string connectionString) : IDbConnectionFactory
+public sealed class MySqlConnectionFactory(MySqlOptions options) : IDbConnectionFactory
 {
-    public DbConnection CreateConnection()
+    private readonly string _connectionString = new MySqlConnectionStringBuilder
     {
-        return new MySqlConnection(connectionString);
+        Server = options.Server,
+        Port = options.Port,
+        Database = options.Database,
+        UserID = options.UserId,
+        Password = options.Password,
+    }.ConnectionString;
+
+    public DbConnection CreateConnection() => new MySqlConnection(_connectionString);
+
+    public async Task TryAsync(Func<DbConnection, Task> action)
+    {
+        var connection = CreateConnection();
+
+        try
+        {
+            await connection.OpenAsync();
+            await action(connection);
+        }
+        finally
+        {
+            await connection.CloseAsync();
+        }
     }
 }

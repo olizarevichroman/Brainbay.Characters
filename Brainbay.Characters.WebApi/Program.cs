@@ -2,7 +2,6 @@ using Brainbay.Characters.DataAccess;
 using Brainbay.Characters.DataAccess.Options;
 using Brainbay.Characters.WebApi.HostedServices;
 using Microsoft.Extensions.Options;
-using MySql.Data.MySqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,16 +18,8 @@ builder.Services.Configure<MySqlOptions>(builder.Configuration.GetSection("DataS
 builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
 {
     var options = provider.GetRequiredService<IOptions<MySqlOptions>>().Value;
-    var connectionBuilder = new MySqlConnectionStringBuilder
-    {
-        Server = options.Server,
-        Port = options.Port,
-        Database = options.Database,
-        UserID = options.UserId,
-        Password = options.Password,
-    };
 
-    return new MySqlConnectionFactory(connectionBuilder.ConnectionString);
+    return new MySqlConnectionFactory(options);
 });
 
 builder.Services.AddHostedService<SchemaRegistrationHostedService>();

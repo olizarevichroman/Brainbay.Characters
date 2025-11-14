@@ -1,4 +1,4 @@
-namespace Brainbay.Characters.DataAccess.Models;
+namespace Brainbay.Characters.Domain;
 
 public enum DataSource
 {

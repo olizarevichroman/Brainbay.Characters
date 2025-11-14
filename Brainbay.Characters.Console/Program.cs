@@ -1,28 +1,30 @@
-﻿using System.Net.Http.Json;
-using Brainbay.Characters.Domain;
-using Brainbay.Characters.Integrations.RickAndMorty.Models;
-using Microsoft.Extensions.Logging;
+﻿using Brainbay.Characters.Application.Extensions;
+using Brainbay.Characters.Application.Services;
+using Brainbay.Characters.DataAccess;
+using Brainbay.Characters.DataAccess.Extensions;
+using Brainbay.Characters.DataAccess.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
-var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<Program>();
+var builder = Host.CreateApplicationBuilder(args);
 
-var baseUri = new Uri($"https://rickandmortyapi.com/api/character?status={CharacterStatus.Alive}");
-var pageUri = baseUri;
+builder.Services.AddApplicationServices();
+builder.Services.AddDataAccessServices();
+builder.Services.AddHttpClient();
 
-var httpClient = new HttpClient();
+builder.Services.Configure<MySqlOptions>(builder.Configuration.GetSection("DataSources:MySql"));
 
-do
+builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
 {
-    var response = await httpClient.GetFromJsonAsync<GetCharacterPageResponse>(pageUri);
+    var options = provider.GetRequiredService<IOptions<MySqlOptions>>().Value;
 
-    if (response is null)
-    {
-        logger.LogWarning("Received a null response from {PageName}. Stopping application.", pageUri);
+    return new MySqlConnectionFactory(options);
+});
 
-        return;
-    }
-    
-    logger.LogInformation("Page '{PageUri}' was successfully retrieved.", pageUri);
+var host = builder.Build();
 
-    pageUri = response.Information.Next;
-    
-} while (pageUri is not null);
+using var scope = host.Services.CreateScope();
+var syncService = scope.ServiceProvider.GetRequiredService<ICharacterSyncService>();
+
+await syncService.SyncCharactersAsync();

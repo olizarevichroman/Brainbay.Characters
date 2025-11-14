@@ -1,0 +1,50 @@
+using System.Collections.Immutable;
+using Brainbay.Characters.DataAccess;
+using Brainbay.Characters.Domain;
+using Brainbay.Characters.Integrations.RickAndMorty.Models;
+using Brainbay.Characters.Integrations.RickAndMorty.Services;
+using CharacterDto = Brainbay.Characters.DataAccess.Models.CharacterDto;
+
+namespace Brainbay.Characters.Application.Services;
+
+internal sealed class CharacterSyncService(
+    IRickAndMortyApiClient apiClient,
+    ICharacterBatchStore characterBatchStore)
+    : ICharacterSyncService
+{
+    public async Task SyncCharactersAsync(CancellationToken cancellationToken = default)
+    {
+        await characterBatchStore.CleanupAsync();
+
+        var filters = new Dictionary<string, string>
+        {
+            { "status", nameof(CharacterStatus.Alive) },
+        };
+
+        var request = new GetCharactersRequest(page: 1, filters);
+        
+        do
+        {
+            var response = await apiClient.GetCharactersAsync(request);
+
+            if (response is null)
+            {
+                return;
+            }
+
+            var characters = response.Characters
+                .Select(x => new CharacterDto(
+                    x.Id,
+                    x.Name,
+                    Enum.Parse<CharacterStatus>(x.Status),
+                    Enum.Parse<CharacterGender>(x.Gender),
+                    x.Created))
+                .ToImmutableArray();
+            
+            await characterBatchStore.RegisterCharactersAsync(characters);
+
+            request = response.NextPageRequest;
+    
+        } while (request is not null);
+    }
+}

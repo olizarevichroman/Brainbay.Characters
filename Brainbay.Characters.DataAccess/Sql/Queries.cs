@@ -15,4 +15,11 @@ internal static class Queries
         .AppendLine("INSERT @Name, @Status")
         .AppendLine("INTO Characters;")
         .ToString();
+    
+    public static readonly string RegisterCharacterBatch = new StringBuilder()
+        .AppendLine("INSERT @Id, @Name, @Status")
+        .AppendLine("INTO Characters;")
+        .ToString();
+    
+    public const string CleanupCharacters = "TRUNCATE TABLE Characters;";
 }

@@ -1,6 +1,4 @@
-using Brainbay.Characters.Domain;
-
-namespace Brainbay.Characters.DataAccess.Models;
+namespace Brainbay.Characters.Domain;
 
 public sealed class GetCharactersResponse(IReadOnlyList<Character> characters, DataSource dataSource)
 {

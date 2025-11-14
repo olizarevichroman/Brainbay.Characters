@@ -19,8 +19,9 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
 
             var parameters = new
             {
-                Name = string.Empty,
-                Status = string.Empty,
+                Name = request.Name,
+                Status = request.Status,
+                Gender = request.Gender,
                 CreatedAt = timeProvider.GetUtcNow(),
             };
 
@@ -52,12 +53,11 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
     }
 
     private sealed record CharacterEntity(
-        int Id,
         string Name,
         CharacterStatus Status,
         CharacterGender Gender,
         DateTime CreatedAt)
     {
-        public Character ToCharacter() => new(Id, Name, Status, Gender, new DateTimeOffset(CreatedAt));
+        public Character ToCharacter() => new( Name, Status, Gender, new DateTimeOffset(CreatedAt));
     }
 }

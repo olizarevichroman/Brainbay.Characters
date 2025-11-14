@@ -1,4 +1,4 @@
-using Brainbay.Characters.DataAccess.Models;
+using Brainbay.Characters.Domain;
 
 namespace Brainbay.Characters.DataAccess;
 

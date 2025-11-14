@@ -1,5 +1,6 @@
 using Brainbay.Characters.DataAccess.Models;
 using Brainbay.Characters.DataAccess.Options;
+using Brainbay.Characters.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

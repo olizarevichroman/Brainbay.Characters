@@ -2,7 +2,7 @@ namespace Brainbay.Characters.DataAccess.Options;
 
 public sealed class MySqlOptions
 {
-    public string Database { get; init; } = "default";
+    public string Database { get; init; } = null!;
 
     public string Server { get; init; } = null!;
 

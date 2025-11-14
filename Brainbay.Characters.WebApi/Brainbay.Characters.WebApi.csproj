@@ -6,10 +6,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Brainbay.Characters.DataAccess\Brainbay.Characters.DataAccess.csproj" />
     </ItemGroup>
 

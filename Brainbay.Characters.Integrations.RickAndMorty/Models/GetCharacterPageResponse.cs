@@ -1,17 +1,10 @@
-using System.Text.Json.Serialization;
-
 namespace Brainbay.Characters.Integrations.RickAndMorty.Models;
 
-public sealed class GetCharacterPageResponse
+public sealed class GetCharacterPageResponse(
+    IReadOnlyList<CharacterDto> characters,
+    GetCharactersRequest? nextPageRequest)
 {
-    [JsonPropertyName("info")]
-    public required Info Information { get; init; }
+    public IReadOnlyList<CharacterDto> Characters { get; } = characters;
 
-    
-    public sealed class Info
-    {
-        public Uri? Next { get; set; }
-
-        public int Pages { get; set; }
-    }
+    public GetCharactersRequest? NextPageRequest { get; } = nextPageRequest;
 }
