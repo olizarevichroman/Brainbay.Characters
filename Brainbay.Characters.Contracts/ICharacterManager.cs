@@ -1,4 +1,4 @@
-namespace Brainbay.Characters.Domain;
+namespace Brainbay.Characters.Contracts;
 
 public interface ICharacterManager
 {

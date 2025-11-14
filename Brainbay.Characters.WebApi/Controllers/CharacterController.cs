@@ -1,4 +1,4 @@
-using Brainbay.Characters.Domain;
+using Brainbay.Characters.Contracts;
 using Brainbay.Characters.WebApi.Extensions;
 using Brainbay.Characters.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;

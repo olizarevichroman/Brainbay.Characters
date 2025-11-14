@@ -1,11 +1,13 @@
+using Brainbay.Characters.Contracts;
+
 namespace Brainbay.Characters.DataAccess.Sql;
 
 public static class Migrations
 {
-    private const string CreateCharactersTable = """
+    private static readonly string CreateCharactersTable = $"""
         CREATE TABLE IF NOT EXISTS Characters (
             Id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
-            Name VARCHAR(100) NOT NULL,
+            Name VARCHAR({ValidationConstants.CharacterNameMaxLength}) NOT NULL,
             Status TINYINT UNSIGNED NOT NULL,
             Gender TINYINT UNSIGNED NOT NULL,
             PRIMARY KEY (Id)

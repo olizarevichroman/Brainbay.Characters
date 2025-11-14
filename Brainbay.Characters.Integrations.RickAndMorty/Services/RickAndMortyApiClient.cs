@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text;
 using Brainbay.Characters.Integrations.RickAndMorty.Models;
 
 namespace Brainbay.Characters.Integrations.RickAndMorty.Services;
@@ -9,8 +10,7 @@ public sealed class RickAndMortyApiClient(HttpClient httpClient) : IRickAndMorty
 
     public async Task<GetCharacterPageResponse?> GetCharactersAsync(GetCharactersRequest request)
     {
-        const string requestUri = $"{BaseUrl}/character";
-        const string pageQueryName = "page";
+        var requestUri = BuildRequestUri();
 
         try
         {
@@ -21,15 +21,20 @@ public sealed class RickAndMortyApiClient(HttpClient httpClient) : IRickAndMorty
                 return null;
             }
 
-            var nextPageUri = response?.Information.Next;
-            var query = nextPageUri is null
-                ? []
-                : System.Web.HttpUtility.ParseQueryString(nextPageUri.Query);
+            var nextPageUri = response.Information.Next;
+
+            if (nextPageUri is null)
+            {
+                return new GetCharacterPageResponse(response.Characters, nextPageRequest: null);
+            }
+
+            var query = System.Web.HttpUtility.ParseQueryString(nextPageUri.Query);
             
-            var filters = query.AllKeys.Select(x => KeyValuePair.Create(x, query[x])).ToDictionary();
-            
-            var nextPage = filters.GetValueOrDefault(pageQueryName, defaultValue: 1);
-            var nextPageRequest = GetNextPage();
+            var filters = query.AllKeys
+                .Select(x => KeyValuePair.Create(x!, query[x]!))
+                .ToDictionary();
+
+            var nextPageRequest = new GetCharactersRequest(filters);
 
             return new GetCharacterPageResponse(response.Characters, nextPageRequest);
         }
@@ -38,9 +43,16 @@ public sealed class RickAndMortyApiClient(HttpClient httpClient) : IRickAndMorty
             return null;
         }
 
-        static GetCharactersRequest? GetNextPage()
+        string BuildRequestUri()
         {
+            var uriBuilder = new StringBuilder(BaseUrl).Append("/character?");
+
+            foreach (var pair in request.Filters)
+            {
+                uriBuilder.Append(pair.Key).Append('=').Append(pair.Value).Append('&');
+            }
             
+            return uriBuilder.ToString();
         }
     }
 }

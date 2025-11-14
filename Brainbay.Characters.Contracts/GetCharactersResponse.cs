@@ -1,4 +1,4 @@
-namespace Brainbay.Characters.Domain;
+namespace Brainbay.Characters.Contracts;
 
 public sealed class GetCharactersResponse(IReadOnlyList<Character> characters, DataSource dataSource)
 {

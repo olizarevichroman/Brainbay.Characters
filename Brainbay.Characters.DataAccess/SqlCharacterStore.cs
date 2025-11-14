@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
-using Brainbay.Characters.DataAccess.Models;
 using Brainbay.Characters.DataAccess.Sql;
-using Brainbay.Characters.Domain;
+using Brainbay.Characters.Contracts;
 using Dapper;
 
 namespace Brainbay.Characters.DataAccess;
@@ -58,6 +57,6 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
         CharacterGender Gender,
         DateTime CreatedAt)
     {
-        public Character ToCharacter() => new( Name, Status, Gender, new DateTimeOffset(CreatedAt));
+        public Character ToCharacter() => new(Name, Status, Gender, new DateTimeOffset(CreatedAt));
     }
 }

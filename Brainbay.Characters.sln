@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Console", "Brainbay.Characters.Console\Brainbay.Characters.Console.csproj", "{CF04D0DE-21F2-4927-9F01-0DDA59649EFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Domain", "Brainbay.Characters.Domain\Brainbay.Characters.Domain.csproj", "{C513728E-BFB5-4B6F-AA8E-27A9DAC7B3C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Contracts", "Brainbay.Characters.Contracts\Brainbay.Characters.Contracts.csproj", "{C513728E-BFB5-4B6F-AA8E-27A9DAC7B3C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.WebApi", "Brainbay.Characters.WebApi\Brainbay.Characters.WebApi.csproj", "{37B63BF2-096D-40E1-A56F-6A67FC19234C}"
 EndProject

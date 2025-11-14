@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
+using Brainbay.Characters.Contracts;
 using Brainbay.Characters.DataAccess;
-using Brainbay.Characters.Domain;
 using Brainbay.Characters.Integrations.RickAndMorty.Models;
 using Brainbay.Characters.Integrations.RickAndMorty.Services;
 using CharacterDto = Brainbay.Characters.DataAccess.Models.CharacterDto;
@@ -21,7 +21,7 @@ internal sealed class CharacterSyncService(
             { "status", nameof(CharacterStatus.Alive) },
         };
 
-        var request = new GetCharactersRequest(page: 1, filters);
+        var request = new GetCharactersRequest(filters);
         
         do
         {
@@ -36,8 +36,8 @@ internal sealed class CharacterSyncService(
                 .Select(x => new CharacterDto(
                     x.Id,
                     x.Name,
-                    Enum.Parse<CharacterStatus>(x.Status),
-                    Enum.Parse<CharacterGender>(x.Gender),
+                    Enum.Parse<CharacterStatus>(x.Status, ignoreCase: true),
+                    Enum.Parse<CharacterGender>(x.Gender, ignoreCase: true),
                     x.Created))
                 .ToImmutableArray();
             
