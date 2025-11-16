@@ -5,9 +5,10 @@ namespace Brainbay.Characters.DataAccess.Sql;
 internal static class Queries
 {
     public static readonly string GetCharacters = new StringBuilder()
-        .AppendLine("SELECT Name, Status")
+        .AppendLine("SELECT Id, Name, Status, Gender, CreatedAt, ImageUrl")
         .AppendLine("FROM Characters")
         .AppendLine("WHERE Id > @LatestId")
+        .AppendLine("ORDER BY Id ASC")
         .AppendLine("LIMIT @Take;")
         .ToString();
     

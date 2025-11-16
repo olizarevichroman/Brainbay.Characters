@@ -32,7 +32,7 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
         }
     }
 
-    public async Task<GetCharactersResponse> GetCharactersAsync()
+    public async Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request)
     {
         var connection = connectionFactory.CreateConnection();
 
@@ -40,7 +40,13 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
         {
             await connection.OpenAsync();
 
-            var entities = await connection.QueryAsync<CharacterEntity>(Queries.GetCharacters);
+            var parameters = new
+            {
+                Take = request.PageSize,
+                LatestId = request.LatestId.GetValueOrDefault(),
+            };
+
+            var entities = await connection.QueryAsync<CharacterEntity>(Queries.GetCharacters, param: parameters);
             var characters = entities.Select(x => x.ToCharacter()).ToImmutableList();
             
             return new GetCharactersResponse(characters, DataSource.Database);
@@ -52,11 +58,19 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
     }
 
     private sealed record CharacterEntity(
+        ulong Id,
         string Name,
-        CharacterStatus Status,
-        CharacterGender Gender,
-        DateTime CreatedAt)
+        byte Status,
+        byte Gender,
+        DateTime CreatedAt,
+        string ImageUrl)
     {
-        public Character ToCharacter() => new(Name, Status, Gender, new DateTimeOffset(CreatedAt));
+        public Character ToCharacter() => new(
+            (int)Id,
+            Name,
+            (CharacterStatus)Status,
+            (CharacterGender)Gender,
+            new DateTimeOffset(CreatedAt),
+            new Uri(ImageUrl));
     }
 }

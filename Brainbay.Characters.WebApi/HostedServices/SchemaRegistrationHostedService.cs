@@ -38,6 +38,8 @@ internal sealed class SchemaRegistrationHostedService(
             {
                 await connection.CloseAsync();
             }
+            
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
 }

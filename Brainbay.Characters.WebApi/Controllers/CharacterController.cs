@@ -10,17 +10,18 @@ namespace Brainbay.Characters.WebApi.Controllers;
 public sealed class CharacterController(ICharacterManager characterManager) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCharacters()
+    [ProducesResponseType<GetCharactersResponse>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCharacters([FromQuery] GetCharactersClientRequest clientRequest)
     {
-        var response = await characterManager.GetCharactersAsync();
+        var request = new GetCharactersRequest(clientRequest.PageSize, clientRequest.LatestId);
+        var response = await characterManager.GetCharactersAsync(request);
 
         if (response.DataSource is DataSource.Database)
         {
             HttpContext.Response.Headers.AppendFromDatabase();
         }
 
-        return Ok();
+        return Ok(response);
     }
 
     [HttpPut]

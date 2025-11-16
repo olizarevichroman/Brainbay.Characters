@@ -1,0 +1,66 @@
+@page "/characters"
+
+@rendermode InteractiveServer
+
+@using Brainbay.Characters.Contracts
+@using Brainbay.Characters.WebApi.Blazor.Components
+
+@inject ICharacterManager CharacterManager
+@inject IDialogService DialogService
+
+<MudPaper Class="px-10 py-10">
+    <MudElement HtmlTag="div">
+        <MudStack Row="true" Class="py-5">
+            <MudText Typo="Typo.h5">Multiverse Characters</MudText>
+            <MudSpacer/>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="OnRegisterButtonClickedAsync">
+                Add character
+            </MudButton>
+        </MudStack>
+        <MudText Typo="Typo.caption">
+            Find your favorite weirdos from across dimensions.
+        </MudText>
+    </MudElement>
+
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudPagination Color="Color.Tertiary" Rectangular="true" DropShadow="true" Count="@_characters.Count" Class="pa-4"/>
+    </MudStack>
+    
+    <MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Spacing="10">
+        @foreach (var character in _characters)
+        {
+            <MudItem>
+                <CharacterCard Character="@character" />
+            </MudItem>
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    private int? _latestId;
+    private IReadOnlyList<Character> _characters = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetCharactersRequest(pageSize: 15, _latestId);
+        var response = await CharacterManager.GetCharactersAsync(request);
+
+        _latestId = response.Characters.MaxBy(x => x.Id)?.Id ?? _latestId;
+        _characters = response.Characters;
+    }
+
+    private async Task OnRegisterButtonClickedAsync()
+    {
+        var reference = await DialogService.ShowAsync<RegisterCharacterDialog>(
+            title: "Register character",
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true,
+                CloseOnEscapeKey = true
+            });
+
+        _ = await reference.Result;
+    }
+}

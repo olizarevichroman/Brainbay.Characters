@@ -1,0 +1,21 @@
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">Register character</MudText>
+    </TitleContent>
+    <DialogContent>
+        <RegisterCharacterForm/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Register</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

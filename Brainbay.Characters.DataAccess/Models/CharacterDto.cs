@@ -7,7 +7,8 @@ public sealed class CharacterDto(
     string name,
     CharacterStatus status,
     CharacterGender gender,
-    DateTimeOffset createdAt)
+    DateTimeOffset createdAt,
+    string imageUrl)
 {
     public int Id { get; } = id;
 
@@ -18,4 +19,6 @@ public sealed class CharacterDto(
     public CharacterGender Gender { get; private set; } = gender;
 
     public DateTimeOffset CreatedAt { get; } = createdAt;
+
+    public string ImageUrl { get; } = imageUrl;
 }

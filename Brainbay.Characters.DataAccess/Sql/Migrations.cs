@@ -10,6 +10,8 @@ public static class Migrations
             Name VARCHAR({ValidationConstants.CharacterNameMaxLength}) NOT NULL,
             Status TINYINT UNSIGNED NOT NULL,
             Gender TINYINT UNSIGNED NOT NULL,
+            CreatedAt DATETIME(3) NOT NULL,
+            ImageUrl VARCHAR(255) NOT NULL,
             PRIMARY KEY (Id)
         );
     """;

@@ -1,6 +1,5 @@
-using Brainbay.Characters.DataAccess.Models;
 using Brainbay.Characters.DataAccess.Options;
-using Brainbay.Characters.Domain;
+using Brainbay.Characters.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -12,20 +11,45 @@ internal sealed class InMemoryCharacterStore(
     IOptions<CharacterCacheOptions> cacheOptions)
     : ICharacterStore
 {
+    private const string CharactersCacheKey = "characters";
+
     private CharacterCacheOptions CacheOptions => cacheOptions.Value;
 
-    public Task RegisterCharacterAsync(RegisterCharacterRequest request)
+    public async Task RegisterCharacterAsync(RegisterCharacterRequest request)
     {
-        // TODO mark stale data, if a character was successfully registered
-        throw new NotImplementedException();
+        await fallbackStore.RegisterCharacterAsync(request);
+        
+        memoryCache.Remove(CharactersCacheKey);
     }
 
-    public async Task<GetCharactersResponse> GetCharactersAsync()
+    public async Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request)
     {
-        // TODO check for characters in memory and check whether data is marked as stale
+        var cacheResponse = await ExtractCachedCharactersAsync();
 
-        return await fallbackStore.GetCharactersAsync();
+        var page = cacheResponse.Characters
+            .Where(x => x.Id >= request.LatestId.GetValueOrDefault())
+            .Take(request.PageSize)
+            .ToList();
+
+        return new GetCharactersResponse(page, cacheResponse.DataSource);
+    }
+
+    private async Task<GetCharactersResponse> ExtractCachedCharactersAsync()
+    {
+        var dataSource = DataSource.Cache;
+
+        var characters = await memoryCache.GetOrCreateAsync(CharactersCacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = CacheOptions.MaxCacheDuration;
+
+            var getAllRequest = new GetCharactersRequest(pageSize: int.MaxValue, latestId: null);
+
+            var response = await fallbackStore.GetCharactersAsync(getAllRequest);
+            dataSource = response.DataSource;
+
+            return response.Characters;
+        }) ?? [];
         
-        // TODO 
+        return new GetCharactersResponse(characters, dataSource);
     }
 }

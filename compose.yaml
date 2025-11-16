@@ -1,0 +1,39 @@
+﻿services:
+  characters.console:
+    container_name: console
+    image: brainbay.characters.console
+    build:
+      context: .
+      dockerfile: Brainbay.Characters.Console/Dockerfile
+    profiles:
+      - sync
+
+  characters.webapi:
+    container_name: webapi
+    depends_on:
+      - database
+    image: brainbay.characters.webapi
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Brainbay.Characters.WebApi/Dockerfile
+    environment:
+      DATASOURCES:MYSQL:SERVER: "database"
+      DATASOURCES:MYSQL:DATABASE: "brainbay"
+      
+  database:
+    container_name: database
+    image: mysql:8.0
+    volumes:
+      - database:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "brainbay"
+      
+volumes:
+  database:
+    driver: local

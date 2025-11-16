@@ -6,5 +6,5 @@ public interface ICharacterStore
 {
     Task RegisterCharacterAsync(RegisterCharacterRequest request);
 
-    Task<GetCharactersResponse> GetCharactersAsync();
+    Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request);
 }

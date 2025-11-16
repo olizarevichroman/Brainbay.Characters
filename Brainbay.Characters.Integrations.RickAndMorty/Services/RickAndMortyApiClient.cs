@@ -6,7 +6,7 @@ namespace Brainbay.Characters.Integrations.RickAndMorty.Services;
 
 public sealed class RickAndMortyApiClient(HttpClient httpClient) : IRickAndMortyApiClient
 {
-    private const string BaseUrl = "https://rickandmortyapi.com/api";
+    private const string BaseUrl = "https://rickandmortyapi.com/api/";
 
     public async Task<GetCharacterPageResponse?> GetCharactersAsync(GetCharactersRequest request)
     {
@@ -45,7 +45,7 @@ public sealed class RickAndMortyApiClient(HttpClient httpClient) : IRickAndMorty
 
         string BuildRequestUri()
         {
-            var uriBuilder = new StringBuilder(BaseUrl).Append("/character?");
+            var uriBuilder = new StringBuilder(BaseUrl).Append("character?");
 
             foreach (var pair in request.Filters)
             {

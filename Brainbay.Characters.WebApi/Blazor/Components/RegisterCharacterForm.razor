@@ -1,0 +1,13 @@
+@using Brainbay.Characters.Contracts
+@using Brainbay.Characters.WebApi.Blazor.Components.Form
+
+<MudForm>
+    <MudTextField T="string" Label="Name" Required="true" MaxLength="@ValidationConstants.CharacterNameMaxLength"/>
+    <CharacterGenderSelector/>
+    <CharacterStatusSelector/>
+    <MudTextField T="string" Label="Image Url" Required="true" MaxLength="@ValidationConstants.CharacterImageUrlMaxLength"/>
+</MudForm>
+
+@code {
+    
+}

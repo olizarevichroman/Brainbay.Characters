@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
 using Brainbay.Characters.Contracts;
 using Brainbay.Characters.DataAccess;
-using Brainbay.Characters.Integrations.RickAndMorty.Models;
 using Brainbay.Characters.Integrations.RickAndMorty.Services;
 using CharacterDto = Brainbay.Characters.DataAccess.Models.CharacterDto;
+using GetCharactersRequest = Brainbay.Characters.Integrations.RickAndMorty.Models.GetCharactersRequest;
 
 namespace Brainbay.Characters.Application.Services;
 
@@ -38,7 +38,8 @@ internal sealed class CharacterSyncService(
                     x.Name,
                     Enum.Parse<CharacterStatus>(x.Status, ignoreCase: true),
                     Enum.Parse<CharacterGender>(x.Gender, ignoreCase: true),
-                    x.Created))
+                    x.Created,
+                    x.Image))
                 .ToImmutableArray();
             
             await characterBatchStore.RegisterCharactersAsync(characters);
