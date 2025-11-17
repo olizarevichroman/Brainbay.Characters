@@ -7,8 +7,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Build.props", "./"]
 COPY ["Brainbay.Characters.WebApi/Brainbay.Characters.WebApi.csproj", "Brainbay.Characters.WebApi/"]
 COPY ["Brainbay.Characters.DataAccess/Brainbay.Characters.DataAccess.csproj", "Brainbay.Characters.DataAccess/"]
+COPY ["Brainbay.Characters.Contracts/Brainbay.Characters.Contracts.csproj", "Brainbay.Characters.Contracts/"]
 RUN dotnet restore "Brainbay.Characters.WebApi/Brainbay.Characters.WebApi.csproj"
 COPY . .
 WORKDIR "/src/Brainbay.Characters.WebApi"

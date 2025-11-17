@@ -2,9 +2,16 @@
   characters.console:
     container_name: console
     image: brainbay.characters.console
+    restart: on-failure
+    depends_on:
+      - database
+      - characters.webapi
     build:
       context: .
       dockerfile: Brainbay.Characters.Console/Dockerfile
+    environment:
+      DATASOURCES:MYSQL:SERVER: "database"
+      DATASOURCES:MYSQL:DATABASE: "brainbay"
     profiles:
       - sync
 

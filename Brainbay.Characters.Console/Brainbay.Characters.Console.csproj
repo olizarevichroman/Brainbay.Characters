@@ -16,10 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Brainbay.Characters.Application\Brainbay.Characters.Application.csproj" />
     </ItemGroup>
 

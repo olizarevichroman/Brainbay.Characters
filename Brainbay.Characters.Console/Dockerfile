@@ -5,7 +5,11 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Build.props", "./"]
 COPY ["Brainbay.Characters.Console/Brainbay.Characters.Console.csproj", "Brainbay.Characters.Console/"]
+COPY ["Brainbay.Characters.Application/Brainbay.Characters.Application.csproj", "Brainbay.Characters.Application/"]
+COPY ["Brainbay.Characters.DataAccess/Brainbay.Characters.DataAccess.csproj", "Brainbay.Characters.DataAccess/"]
+COPY ["Brainbay.Characters.Contracts/Brainbay.Characters.Contracts.csproj", "Brainbay.Characters.Contracts/"]
 COPY ["Brainbay.Characters.Integrations.RickAndMorty/Brainbay.Characters.Integrations.RickAndMorty.csproj", "Brainbay.Characters.Integrations.RickAndMorty/"]
 RUN dotnet restore "Brainbay.Characters.Console/Brainbay.Characters.Console.csproj"
 COPY . .
