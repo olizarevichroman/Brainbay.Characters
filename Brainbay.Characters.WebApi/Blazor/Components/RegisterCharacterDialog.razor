@@ -1,21 +1,47 @@
+@using Brainbay.Characters.Contracts
+
+@inject ICharacterManager CharacterManager
+
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h5">Register character</MudText>
     </TitleContent>
     <DialogContent>
-        <RegisterCharacterForm/>
+        <RegisterCharacterForm Disabled="_isLoading" CharacterChanged="OnCharacterChanged"/>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Register</MudButton>
+        <MudButton Color="Color.Primary" OnClick="RegisterCharacterAsync" Disabled="IsRegisterDisabled">Register</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+    private bool _isLoading;
+    private RegisterCharacterForm.CharacterDto? _characterDto;
+
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private bool IsRegisterDisabled => _characterDto is null;
+
+    private void OnCharacterChanged(RegisterCharacterForm.CharacterDto? characterDto) =>
+        _characterDto = characterDto;
+
+    private async Task RegisterCharacterAsync()
+    {
+        _isLoading = true;
+
+        var request = new RegisterCharacterRequest(
+            _characterDto!.Name,
+                _characterDto!.Species,
+            _characterDto.Status,
+            _characterDto.Gender,
+            _characterDto.ImageUrl);
+
+        await CharacterManager.RegisterCharacterAsync(request);
+        
+        MudDialog.Close();
+    }
 
     private void Cancel() => MudDialog.Cancel();
 }

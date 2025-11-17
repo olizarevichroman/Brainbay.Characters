@@ -1,13 +1,75 @@
 @using Brainbay.Characters.Contracts
 @using Brainbay.Characters.WebApi.Blazor.Components.Form
 
-<MudForm>
-    <MudTextField T="string" Label="Name" Required="true" MaxLength="@ValidationConstants.CharacterNameMaxLength"/>
-    <CharacterGenderSelector/>
-    <CharacterStatusSelector/>
-    <MudTextField T="string" Label="Image Url" Required="true" MaxLength="@ValidationConstants.CharacterImageUrlMaxLength"/>
+<MudForm Spacing="4" Disabled="@Disabled" IsValid="_isValid" IsValidChanged="IsValidChangedAsync">
+    <MudTextField Value="_name" ValueChanged="OnNameChangedAsync" T="string?" Label="Name" Required="true" MaxLength="@ValidationConstants.CharacterNameMaxLength"/>
+    <MudTextField Value="_species" ValueChanged="OnSpeciesChangedAsync" T="string?" Label="Species" Required="true" MaxLength="@ValidationConstants.CharacterSpeciesMaxLength"/>
+    <CharacterGenderSelector Value="_gender" ValueChanged="OnGenderChangedAsync"/>
+    <CharacterStatusSelector Value="_status" ValueChanged="OnStatusChangedAsync"/>
+    <MudTextField
+        Value="_imageUrl"
+        ValueChanged="OnImageUrlChangedAsync"
+        T="string?"
+        Validation="ValidateUrl"
+        Label="Image Url"
+        Required="true"
+        MaxLength="@ValidationConstants.CharacterImageUrlMaxLength"/>
 </MudForm>
 
 @code {
+    private bool _isValid;
+    private string? _name;
+    private string? _species;
+    private CharacterGender? _gender;
+    private CharacterStatus? _status;
+    private string? _imageUrl;
+
+    [Parameter, EditorRequired]
+    public EventCallback<CharacterDto?> CharacterChanged { get; set; }
     
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    private Task OnNameChangedAsync(string? value) => NotifyUpdatedAsync(() => _name = value);
+    
+    private Task OnSpeciesChangedAsync(string? value) => NotifyUpdatedAsync(() => _species = value);
+    
+    private Task OnGenderChangedAsync(CharacterGender? value) => NotifyUpdatedAsync(() => _gender = value);
+    
+    private Task OnStatusChangedAsync(CharacterStatus? value) => NotifyUpdatedAsync(() => _status = value);
+
+    private Task OnImageUrlChangedAsync(string? value) => NotifyUpdatedAsync(() => _imageUrl = value);
+
+    private Task NotifyUpdatedAsync(Action action)
+    {
+        action();
+    
+        if (!_isValid)
+        {
+            return Task.CompletedTask;
+        }
+
+        var character = _isValid
+            ? new CharacterDto(_name!,  _species!, _gender!.Value, _status!.Value, new Uri(_imageUrl!))
+            : null;
+
+        return CharacterChanged.InvokeAsync(character); 
+    }
+
+    private Task IsValidChangedAsync(bool value)
+    {
+        _isValid = value;
+
+        var character = _isValid
+            ? new CharacterDto(_name!, _species!, _gender!.Value, _status!.Value, new Uri(_imageUrl!))
+            : null;
+
+        return CharacterChanged.InvokeAsync(character);
+    }
+    
+    private static string? ValidateUrl(string? text) => Uri.TryCreate(text, UriKind.Absolute, out _)
+        ? null
+        : "Value is not a valid URI.";
+    
+    public sealed record CharacterDto(string Name, string Species, CharacterGender Gender, CharacterStatus Status, Uri ImageUrl);
 }

@@ -13,7 +13,7 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
     [ProducesResponseType<GetCharactersResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCharacters([FromQuery] GetCharactersClientRequest clientRequest)
     {
-        var request = new GetCharactersRequest(clientRequest.PageSize, clientRequest.LatestId);
+        var request = new GetCharactersRequest(clientRequest.Skip, clientRequest.Take);
         var response = await characterManager.GetCharactersAsync(request);
 
         if (response.DataSource is DataSource.Database)
@@ -26,9 +26,21 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> RegisterCharacter([FromQuery] RegisterCharacterDto characterDto)
+    public async Task<IActionResult> RegisterCharacter([FromBody] RegisterCharacterDto characterDto)
     {
-        var request = new RegisterCharacterRequest(characterDto.Name, characterDto.Status, characterDto.Gender);
+        if (!Uri.TryCreate(characterDto.ImageUrl, UriKind.Absolute, out var imageUrl))
+        {
+            ModelState.AddModelError(nameof(characterDto.ImageUrl), "Invalid image URL");
+
+            return ValidationProblem(ModelState);
+        }
+
+        var request = new RegisterCharacterRequest(
+            characterDto.Name,
+            characterDto.Species,
+            characterDto.Status,
+            characterDto.Gender,
+            imageUrl);
 
         await characterManager.RegisterCharacterAsync(request);
         

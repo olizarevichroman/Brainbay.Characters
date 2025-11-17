@@ -1,19 +1,47 @@
 @using Brainbay.Characters.Contracts
 
-<MudCard Elevation="5" Class="pa-4" Style="border-radius: 30px;">
+<MudCard Class="character-card" Elevation="8">
+    <MudImage Src="@Character.ImageUrl.ToString()" Class="character-card__image" Fluid="true"/>
 
-    <MudCardContent Style="width: 220px;">
-        <MudImage Alt="@Character.Name" Src="@Character.ImageUrl.ToString()" Fluid="true"/>
-        <MudStack Row="true" AlignItems="AlignItems.Center">
-            <MudText>@Character.Name</MudText>
-            <MudSpacer/>
-            <MudChip T="string" Variant="Variant.Text" Color="Color.Primary" Size="Size.Medium">Human</MudChip>
+    <MudCardContent Class="character-card__body">
+        <MudText Typo="Typo.h5" Class="character-card__name">
+            @Character.Name
+        </MudText>
+
+        <MudDivider Class="my-2" />
+
+        <MudStack Spacing="1">
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.caption" Class="character-card__meta-label">
+                    Origin
+                </MudText>
+                <MudText Typo="Typo.caption" Class="character-card__meta-value">
+                    Earth
+                </MudText>
+            </MudStack>
+
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.caption" Class="character-card__meta-label">
+                    Species
+                </MudText>
+                <MudText Typo="Typo.caption" Class="character-card__meta-value">
+                    @Character.Species
+                </MudText>
+            </MudStack>
+
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.caption" Class="character-card__meta-label">
+                    Gender
+                </MudText>
+                <MudText Typo="Typo.caption" Class="character-card__meta-value">
+                    @Character.Gender
+                </MudText>
+            </MudStack>
         </MudStack>
-        <MudStack>@($"Gender: {Character.Gender}")</MudStack>
     </MudCardContent>
 </MudCard>
 
 @code {
     [Parameter, EditorRequired]
-    public Character Character { get; set; }
+    public Character Character { get; set; } = null!;
 }

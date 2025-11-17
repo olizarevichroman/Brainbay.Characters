@@ -8,10 +8,11 @@ public static class Migrations
         CREATE TABLE IF NOT EXISTS Characters (
             Id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
             Name VARCHAR({ValidationConstants.CharacterNameMaxLength}) NOT NULL,
+            Species VARCHAR({ValidationConstants.CharacterSpeciesMaxLength}) NOT NULL,
             Status TINYINT UNSIGNED NOT NULL,
             Gender TINYINT UNSIGNED NOT NULL,
             CreatedAt DATETIME(3) NOT NULL,
-            ImageUrl VARCHAR(255) NOT NULL,
+            ImageUrl VARCHAR({ValidationConstants.CharacterImageUrlMaxLength}) NOT NULL,
             PRIMARY KEY (Id)
         );
     """;

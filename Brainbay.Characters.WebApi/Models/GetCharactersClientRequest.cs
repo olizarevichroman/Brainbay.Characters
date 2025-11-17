@@ -1,11 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Brainbay.Characters.WebApi.Models;
 
 public sealed class GetCharactersClientRequest
 {
-    [BindRequired]
-    public int PageSize { get; set; } = 10;
+    [BindRequired, Range(0, int.MaxValue)]
+    public int Skip { get; set; }
     
-    public int? LatestId { get; set; }
+    [BindRequired, Range(0, int.MaxValue)]
+    public int Take { get; set; }
 }

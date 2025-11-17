@@ -1,20 +1,18 @@
 using System.Collections.Immutable;
 using Brainbay.Characters.Contracts;
-using Brainbay.Characters.DataAccess;
 using Brainbay.Characters.Integrations.RickAndMorty.Services;
-using CharacterDto = Brainbay.Characters.DataAccess.Models.CharacterDto;
 using GetCharactersRequest = Brainbay.Characters.Integrations.RickAndMorty.Models.GetCharactersRequest;
 
 namespace Brainbay.Characters.Application.Services;
 
 internal sealed class CharacterSyncService(
     IRickAndMortyApiClient apiClient,
-    ICharacterBatchStore characterBatchStore)
+    ICharacterSyncManager syncManager)
     : ICharacterSyncService
 {
-    public async Task SyncCharactersAsync(CancellationToken cancellationToken = default)
+    public async Task SyncCharactersAsync()
     {
-        await characterBatchStore.CleanupAsync();
+        await syncManager.CleanupAsync();
 
         var filters = new Dictionary<string, string>
         {
@@ -33,16 +31,17 @@ internal sealed class CharacterSyncService(
             }
 
             var characters = response.Characters
-                .Select(x => new CharacterDto(
+                .Select(x => new Character(
                     x.Id,
                     x.Name,
+                    x.Species,
                     Enum.Parse<CharacterStatus>(x.Status, ignoreCase: true),
                     Enum.Parse<CharacterGender>(x.Gender, ignoreCase: true),
                     x.Created,
-                    x.Image))
+                    new Uri(x.Image)))
                 .ToImmutableArray();
             
-            await characterBatchStore.RegisterCharactersAsync(characters);
+            await syncManager.RegisterCharactersAsync(characters);
 
             request = response.NextPageRequest;
     

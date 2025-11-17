@@ -5,6 +5,7 @@ namespace Brainbay.Characters.DataAccess.Models;
 public sealed class CharacterDto(
     int id,
     string name,
+    string species,
     CharacterStatus status,
     CharacterGender gender,
     DateTimeOffset createdAt,
@@ -13,6 +14,8 @@ public sealed class CharacterDto(
     public int Id { get; } = id;
 
     public string Name { get; } = name;
+
+    public string Species { get; } = species;
 
     public CharacterStatus Status { get; private set; } = status;
 

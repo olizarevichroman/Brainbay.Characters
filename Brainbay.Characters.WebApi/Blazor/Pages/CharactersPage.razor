@@ -1,4 +1,4 @@
-@page "/characters"
+@page "/"
 
 @rendermode InteractiveServer
 
@@ -7,46 +7,57 @@
 
 @inject ICharacterManager CharacterManager
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudPaper Class="px-10 py-10">
     <MudElement HtmlTag="div">
         <MudStack Row="true" Class="py-5">
             <MudText Typo="Typo.h5">Multiverse Characters</MudText>
             <MudSpacer/>
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="OnRegisterButtonClickedAsync">
+            <MudButton Class="rounded-pill" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="OnRegisterButtonClickedAsync">
                 Add character
             </MudButton>
         </MudStack>
-        <MudText Typo="Typo.caption">
+        <MudText Typo="Typo.body1">
             Find your favorite weirdos from across dimensions.
         </MudText>
     </MudElement>
 
     <MudStack Row="true" Justify="Justify.Center">
-        <MudPagination Color="Color.Tertiary" Rectangular="true" DropShadow="true" Count="@_characters.Count" Class="pa-4"/>
+        <MudPagination
+            Class="pa-4"
+            Color="Color.Tertiary"
+            Count="@_totalPages"
+            Selected="_currentPage"
+            DropShadow="true"
+            Rectangular="true"
+            SelectedChanged="HandlePageChangedAsync"/>
     </MudStack>
     
     <MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Spacing="10">
         @foreach (var character in _characters)
         {
             <MudItem>
-                <CharacterCard Character="@character" />
+                <CharacterCard Character="@character"/>
             </MudItem>
         }
     </MudStack>
 </MudPaper>
 
 @code {
-    private int? _latestId;
+    private const int PageSize = 10;
+
+    private int _currentPage = 1;
+    private int _totalPages;
     private IReadOnlyList<Character> _characters = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new GetCharactersRequest(pageSize: 15, _latestId);
+        var request = new GetCharactersRequest(skip: 0, take: PageSize);
         var response = await CharacterManager.GetCharactersAsync(request);
 
-        _latestId = response.Characters.MaxBy(x => x.Id)?.Id ?? _latestId;
         _characters = response.Characters;
+        _totalPages = (int)Math.Floor((double)response.TotalCount / PageSize);
     }
 
     private async Task OnRegisterButtonClickedAsync()
@@ -61,6 +72,57 @@
                 CloseOnEscapeKey = true
             });
 
-        _ = await reference.Result;
+        var dialogResult = await reference.Result;
+
+        if (dialogResult is null || dialogResult.Canceled)
+        {
+            return;
+        }
+
+        Snackbar.Add("A character was successfully registered.", Severity.Success);
+
+        _currentPage = 1;
+        await ReloadCharactersAsync();
+    }
+
+    private async Task ReloadCharactersAsync()
+    {
+        var skip = _currentPage > 1 ? _currentPage * PageSize : 0;
+        var request = new GetCharactersRequest(skip, PageSize);
+        var response = await CharacterManager.GetCharactersAsync(request);
+
+        _characters = response.Characters;
+    }
+
+    private Task HandlePageChangedAsync(int page)
+    {
+        _currentPage = page;
+
+        return ReloadCharactersAsync();
     }
 }
+
+<style>
+    .character-card {
+        width: 240px;
+        border-radius: 28px;
+        overflow: hidden;
+    }
+
+    .character-card__name {
+        margin-bottom: 4px;
+    }
+
+    .character-card__description {
+        color: #6b7280;
+    }
+
+    .character-card__meta-label {
+        color: #9ca3af;
+    }
+
+    .character-card__meta-value {
+        color: #374151;
+        font-weight: 500;
+    }
+</style>

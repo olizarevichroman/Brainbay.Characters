@@ -19,9 +19,11 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
             var parameters = new
             {
                 Name = request.Name,
+                Species = request.Species,
                 Status = request.Status,
                 Gender = request.Gender,
                 CreatedAt = timeProvider.GetUtcNow(),
+                ImageUrl = request.ImageUrl.ToString(),
             };
 
             await connection.ExecuteAsync(Queries.RegisterCharacter, param: parameters);
@@ -42,14 +44,18 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
 
             var parameters = new
             {
-                Take = request.PageSize,
-                LatestId = request.LatestId.GetValueOrDefault(),
+                Skip = request.Skip,
+                Take = request.Take,
             };
 
-            var entities = await connection.QueryAsync<CharacterEntity>(Queries.GetCharacters, param: parameters);
-            var characters = entities.Select(x => x.ToCharacter()).ToImmutableList();
+            var reader = await connection.QueryMultipleAsync(Queries.GetCharacters, param: parameters);
+
+            var characterEntities = await reader.ReadAsync<CharacterEntity>();
+            var totalCount = await reader.ReadSingleAsync<int>();
+
+            var characters = characterEntities.Select(x => x.ToCharacter()).ToImmutableList();
             
-            return new GetCharactersResponse(characters, DataSource.Database);
+            return new GetCharactersResponse(characters, DataSource.Database, totalCount);
         }
         finally
         {
@@ -60,6 +66,7 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
     private sealed record CharacterEntity(
         ulong Id,
         string Name,
+        string Species,
         byte Status,
         byte Gender,
         DateTime CreatedAt,
@@ -68,6 +75,7 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
         public Character ToCharacter() => new(
             (int)Id,
             Name,
+            Species,
             (CharacterStatus)Status,
             (CharacterGender)Gender,
             new DateTimeOffset(CreatedAt),

@@ -5,21 +5,18 @@ namespace Brainbay.Characters.DataAccess.Sql;
 internal static class Queries
 {
     public static readonly string GetCharacters = new StringBuilder()
-        .AppendLine("SELECT Id, Name, Status, Gender, CreatedAt, ImageUrl")
+        .AppendLine("SELECT Id, Name, Species, Status, Gender, CreatedAt, ImageUrl")
         .AppendLine("FROM Characters")
-        .AppendLine("WHERE Id > @LatestId")
-        .AppendLine("ORDER BY Id ASC")
-        .AppendLine("LIMIT @Take;")
+        .AppendLine("ORDER BY Id DESC")
+        .AppendLine("LIMIT @Skip, @Take;")
+        .AppendLine()
+        .AppendLine("SELECT COUNT(1) FROM Characters;")
         .ToString();
     
     public static readonly string RegisterCharacter = new StringBuilder()
-        .AppendLine("INSERT @Name, @Status")
-        .AppendLine("INTO Characters;")
-        .ToString();
-    
-    public static readonly string RegisterCharacterBatch = new StringBuilder()
-        .AppendLine("INSERT @Id, @Name, @Status")
-        .AppendLine("INTO Characters;")
+        .AppendLine("INSERT INTO Characters (Name, Species, Status, Gender, CreatedAt, ImageUrl)")
+        .AppendLine("VALUES (@Name, @Species, @Status, @Gender, @CreatedAt, @ImageUrl)")
+        .AppendLine("ON DUPLICATE KEY UPDATE Status = VALUES(Status), Gender = VALUES(Gender), ImageUrl = VALUES(ImageUrl), Species = VALUES(Species);")
         .ToString();
     
     public const string CleanupCharacters = "TRUNCATE TABLE Characters;";

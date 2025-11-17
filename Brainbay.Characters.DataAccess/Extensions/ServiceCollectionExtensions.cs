@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<ICharacterBatchStore, SqlCharacterBatchStore>();
         services.AddTransient<ICharacterManager, CharacterManager>();
+        services.AddTransient<ICharacterSyncManager, CharacterSyncManager>();
 
         return services;
     }

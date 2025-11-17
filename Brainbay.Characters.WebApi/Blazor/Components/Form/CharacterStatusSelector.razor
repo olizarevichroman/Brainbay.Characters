@@ -1,6 +1,6 @@
 @using Brainbay.Characters.Contracts
 
-<MudSelect T="CharacterStatus?" Label="Status" Value="@Value" ValueChanged="ValueChanged">
+<MudSelect T="CharacterStatus?" Label="Status" Value="@Value" ValueChanged="ValueChanged" Required="true">
     @foreach (var gender in Enum.GetValues<CharacterStatus>())
     {
         <MudSelectItem @key="gender" T="CharacterStatus?" Value="@gender">@gender</MudSelectItem>

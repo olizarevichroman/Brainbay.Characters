@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Integra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Tests", "Brainbay.Characters.Tests\Brainbay.Characters.Tests.csproj", "{EBFF9338-0382-41D0-AF35-9A03315223B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brainbay.Characters.Application", "Brainbay.Characters.Application\Brainbay.Characters.Application.csproj", "{76850E7E-337A-4786-9C6F-D109653A1947}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{EBFF9338-0382-41D0-AF35-9A03315223B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBFF9338-0382-41D0-AF35-9A03315223B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBFF9338-0382-41D0-AF35-9A03315223B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76850E7E-337A-4786-9C6F-D109653A1947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76850E7E-337A-4786-9C6F-D109653A1947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76850E7E-337A-4786-9C6F-D109653A1947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76850E7E-337A-4786-9C6F-D109653A1947}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

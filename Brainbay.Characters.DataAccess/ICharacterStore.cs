@@ -2,7 +2,7 @@ using Brainbay.Characters.Contracts;
 
 namespace Brainbay.Characters.DataAccess;
 
-public interface ICharacterStore
+internal interface ICharacterStore
 {
     Task RegisterCharacterAsync(RegisterCharacterRequest request);
 

@@ -1,8 +1,8 @@
 namespace Brainbay.Characters.Contracts;
 
-public sealed class GetCharactersRequest(int pageSize, int? latestId)
+public sealed class GetCharactersRequest(int skip, int take)
 {
-    public int PageSize { get; } = pageSize;
+    public int Skip { get; } = skip;
 
-    public int? LatestId { get; } = latestId;
+    public int Take { get; } = take;
 }

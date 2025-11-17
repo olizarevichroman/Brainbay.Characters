@@ -27,29 +27,29 @@ internal sealed class InMemoryCharacterStore(
         var cacheResponse = await ExtractCachedCharactersAsync();
 
         var page = cacheResponse.Characters
-            .Where(x => x.Id >= request.LatestId.GetValueOrDefault())
-            .Take(request.PageSize)
+            .Skip(request.Skip)
+            .Take(request.Take)
             .ToList();
 
-        return new GetCharactersResponse(page, cacheResponse.DataSource);
+        return new GetCharactersResponse(page, cacheResponse.DataSource, cacheResponse.TotalCount);
     }
 
     private async Task<GetCharactersResponse> ExtractCachedCharactersAsync()
     {
         var dataSource = DataSource.Cache;
 
-        var characters = await memoryCache.GetOrCreateAsync(CharactersCacheKey, async entry =>
+        var response = await memoryCache.GetOrCreateAsync(CharactersCacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = CacheOptions.MaxCacheDuration;
 
-            var getAllRequest = new GetCharactersRequest(pageSize: int.MaxValue, latestId: null);
+            var getAllRequest = new GetCharactersRequest(skip: 0, take: int.MaxValue);
 
             var response = await fallbackStore.GetCharactersAsync(getAllRequest);
             dataSource = response.DataSource;
 
-            return response.Characters;
-        }) ?? [];
+            return response;
+        });
         
-        return new GetCharactersResponse(characters, dataSource);
+        return new GetCharactersResponse(response!.Characters, dataSource, response.TotalCount);
     }
 }
