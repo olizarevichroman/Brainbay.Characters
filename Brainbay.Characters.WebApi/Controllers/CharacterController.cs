@@ -26,6 +26,7 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterCharacter([FromBody] RegisterCharacterDto characterDto)
     {
         if (!Uri.TryCreate(characterDto.ImageUrl, UriKind.Absolute, out var imageUrl))

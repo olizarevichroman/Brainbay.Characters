@@ -20,6 +20,13 @@ public static class ServiceCollectionExtensions
             
             return new InMemoryCharacterStore(sqlStore, memoryCache, cacheOptions);
         });
+        
+        services.AddSingleton<IDbConnectionFactory>(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<MySqlOptions>>().Value;
+
+            return new MySqlConnectionFactory(options);
+        });
 
         services.AddTransient<ICharacterBatchStore, SqlCharacterBatchStore>();
         services.AddTransient<ICharacterManager, CharacterManager>();

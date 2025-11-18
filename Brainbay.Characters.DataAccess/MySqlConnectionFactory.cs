@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 
 namespace Brainbay.Characters.DataAccess;
 
-public sealed class MySqlConnectionFactory(MySqlOptions options) : IDbConnectionFactory
+internal sealed class MySqlConnectionFactory(MySqlOptions options) : IDbConnectionFactory
 {
     private readonly string _connectionString = new MySqlConnectionStringBuilder
     {

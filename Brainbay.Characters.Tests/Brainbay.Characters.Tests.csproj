@@ -6,7 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Bogus" Version="35.6.5" />
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="FluentAssertions" Version="8.8.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.22" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
@@ -24,6 +28,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Brainbay.Characters.Application\Brainbay.Characters.Application.csproj" />
       <ProjectReference Include="..\Brainbay.Characters.DataAccess\Brainbay.Characters.DataAccess.csproj" />
+      <ProjectReference Include="..\Brainbay.Characters.WebApi\Brainbay.Characters.WebApi.csproj" />
     </ItemGroup>
 
 </Project>
