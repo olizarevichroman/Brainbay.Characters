@@ -29,7 +29,7 @@ public sealed class CharacterControllerUnitTests
     }
 
     [Fact]
-    public async Task GetCharacters_ShouldReturnOk_AndSetHeader_WhenFromDatabase()
+    public async Task GetCharacters_DatabaseDataSource_ShouldReturnOk_AndSetHeader()
     {
         // Arrange
         var clientRequest = new GetCharactersClientRequest
@@ -54,7 +54,7 @@ public sealed class CharacterControllerUnitTests
     }
 
     [Fact]
-    public async Task GetCharacters_ShouldNotSetHeader_WhenFromCache()
+    public async Task GetCharacters_CachedResult_ShouldNotSetHeader()
     {
         // Arrange
         var clientRequest = new GetCharactersClientRequest
@@ -75,15 +75,18 @@ public sealed class CharacterControllerUnitTests
     }
 
     [Fact]
-    public async Task RegisterCharacter_ShouldReturnValidationProblem_WhenUrlIsInvalid()
+    public async Task RegisterCharacter_UriIsInvalid_ShouldReturnValidationProblem()
     {
         // Arrange
-        var dto = new RegisterCharacterDto(
-            "Rick", 
-            "Human", 
-            CharacterStatus.Alive, 
-            CharacterGender.Male, 
-            "invalid-url-string"); 
+        var faker = new Faker();
+        var dto = new RegisterCharacterDto
+        {
+            Name = faker.Name.FullName(),
+            Species = faker.Lorem.Word(),
+            Status = CharacterStatus.Alive,
+            Gender = faker.PickRandom<CharacterGender>(),
+            ImageUrl = "invalid-url-string",
+        };
 
         // Act
         var result = await _controller.RegisterCharacter(dto);
@@ -99,16 +102,18 @@ public sealed class CharacterControllerUnitTests
     }
 
     [Fact]
-    public async Task RegisterCharacter_ShouldCallManager_WhenValid()
+    public async Task RegisterCharacter_RequestIsValid_ShouldCallManager()
     {
         // Arrange
         var faker = new Faker();
-        var dto = new RegisterCharacterDto(
-            faker.Name.FirstName(), 
-            faker.Lorem.Word(), 
-            CharacterStatus.Alive, 
-            faker.Random.Enum<CharacterGender>(), 
-            faker.Internet.Url());
+        var dto = new RegisterCharacterDto
+        {
+            Name = faker.Name.FirstName(),
+            Species = faker.Lorem.Word(),
+            Status = CharacterStatus.Alive,
+            Gender = faker.Random.Enum<CharacterGender>(),
+            ImageUrl = faker.Internet.Url(),
+        };
 
         // Act
         var result = await _controller.RegisterCharacter(dto);

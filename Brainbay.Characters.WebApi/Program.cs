@@ -1,8 +1,11 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Brainbay.Characters.Contracts;
 using Brainbay.Characters.DataAccess.Extensions;
 using Brainbay.Characters.DataAccess.Options;
 using Brainbay.Characters.WebApi.Blazor;
 using Brainbay.Characters.WebApi.HostedServices;
+using Microsoft.AspNetCore.Http.Json;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +24,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.Configure<CharacterCacheOptions>(builder.Configuration.GetSection("Options:Characters"));
 builder.Services.Configure<MySqlOptions>(builder.Configuration.GetSection("DataSources:MySql"));
@@ -45,3 +50,5 @@ app.MapRazorComponents<App>()
     .DisableAntiforgery();
 
 await app.RunAsync();
+
+public partial class Program;

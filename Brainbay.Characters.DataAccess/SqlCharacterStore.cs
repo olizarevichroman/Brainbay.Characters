@@ -8,14 +8,9 @@ namespace Brainbay.Characters.DataAccess;
 internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, TimeProvider timeProvider)
     : ICharacterStore
 {
-    public async Task RegisterCharacterAsync(RegisterCharacterRequest request)
-    {
-        var connection = connectionFactory.CreateConnection();
-
-        try
+    public Task RegisterCharacterAsync(RegisterCharacterRequest request) =>
+        connectionFactory.TryAsync(async connection =>
         {
-            await connection.OpenAsync();
-
             var parameters = new
             {
                 Name = request.Name,
@@ -27,12 +22,7 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
             };
 
             await connection.ExecuteAsync(Queries.RegisterCharacter, param: parameters);
-        }
-        finally
-        {
-            await connection.CloseAsync();
-        }
-    }
+        });
 
     public async Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request)
     {

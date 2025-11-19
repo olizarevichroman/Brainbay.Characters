@@ -2,6 +2,6 @@ namespace Brainbay.Characters.Contracts;
 
 public enum DataSource
 {
-    Database,
-    Cache,
+    Database = 1,
+    Cache = 2,
 }

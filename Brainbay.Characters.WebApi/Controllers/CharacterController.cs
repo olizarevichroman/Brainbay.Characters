@@ -11,6 +11,7 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
 {
     [HttpGet]
     [ProducesResponseType<GetCharactersResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetCharacters([FromQuery] GetCharactersClientRequest clientRequest)
     {
         var request = new GetCharactersRequest(clientRequest.Skip, clientRequest.Take);

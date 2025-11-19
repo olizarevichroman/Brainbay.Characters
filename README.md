@@ -141,3 +141,35 @@ The WebApi project provides HTTP endpoints for interacting with character data.
   ```text
   http://localhost:5000/
   ```
+
+## 6. Testing
+
+The solution includes a test project (`Brainbay.Characters.Tests`) that demonstrates the testing approach for the application.
+
+### Testing Libraries
+
+The test project uses the following libraries:
+
+- **xUnit v3** - as the testing framework
+- **FluentAssertions** - for more readable and expressive assertions
+- **Moq** - for creating mocks and stubs in unit tests
+- **Bogus** - for generating realistic test data
+- **Testcontainers.MySql** - for spinning up real MySQL database instances in integration tests
+- **Microsoft.AspNetCore.Mvc.Testing** - for integration testing of the WebApi
+
+### Integration Tests with Testcontainers
+
+The integration tests use **Testcontainers** to provide a real MySQL database instance instead of using in-memory databases or mocks. This approach:
+
+- Ensures tests run against the actual database technology used in production
+- Validates that migrations, queries, and database interactions work correctly
+
+### Coverage Note
+
+Please note that **not all integrations and use cases are covered with tests**. The existing tests are intended to demonstrate the general testing approach and architecture. The test coverage includes:
+
+- Basic integration tests for the Character API endpoints
+- Example of validation testing
+- Database integration patterns using Testcontainers
+
+The testing infrastructure is in place and can be extended to cover additional scenarios as needed.
