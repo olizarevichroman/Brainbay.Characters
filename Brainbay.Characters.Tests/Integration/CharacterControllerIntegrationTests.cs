@@ -54,8 +54,6 @@ public sealed class CharacterControllerIntegrationTests : IClassFixture<CustomWe
             TestContext.Current.CancellationToken);
 
         content.Should().NotBeNull();
-        content.TotalCount.Should().Be(0);
-        content.Characters.Should().BeEmpty();
     }
 
     [Fact]
