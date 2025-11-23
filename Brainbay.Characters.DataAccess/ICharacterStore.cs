@@ -4,7 +4,7 @@ namespace Brainbay.Characters.DataAccess;
 
 internal interface ICharacterStore
 {
-    Task RegisterCharacterAsync(RegisterCharacterRequest request);
+    Task<int> RegisterCharacterAsync(RegisterCharacterRequest request, DateTimeOffset now);
 
     Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request);
 }

@@ -115,14 +115,31 @@ public sealed class CharacterControllerUnitTests
             ImageUrl = faker.Internet.Url(),
         };
 
+        var now = TimeProvider.System.GetUtcNow();
+
+        _managerMock
+            .Setup(x => x.RegisterCharacterAsync(It.IsAny<RegisterCharacterRequest>()))
+            .ReturnsAsync((RegisterCharacterRequest req) => new Character(
+                 It.IsAny<int>(),
+                req.Name,
+                req.Species,
+                req.Status,
+                req.Gender,
+                now,
+                req.ImageUrl));
+
         // Act
         var result = await _controller.RegisterCharacter(dto);
 
         // Assert
-        result.Should().BeOfType<NoContentResult>();
+        var createdResult = result.Should().BeOfType<CreatedResult>().Subject;
+        var character = createdResult.Value.Should().BeOfType<Character>().Subject;
 
-        _managerMock.Verify(x => x.RegisterCharacterAsync(
-            It.IsAny<RegisterCharacterRequest>()),
-            Times.Once);
+        character.Name.Should().Be(dto.Name);
+        character.Species.Should().Be(dto.Species);
+        character.Status.Should().Be(dto.Status);
+        character.Gender.Should().Be(dto.Gender);
+        character.ImageUrl.Should().Be(new Uri(dto.ImageUrl));
+        character.Created.Should().Be(now);
     }
 }

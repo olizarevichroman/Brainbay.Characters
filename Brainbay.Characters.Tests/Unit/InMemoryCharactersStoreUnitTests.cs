@@ -65,8 +65,8 @@ public sealed class InMemoryCharactersStoreUnitTests
 
         var store = new InMemoryCharacterStore(fallback.Object, _cache, _options);
 
-        int skip = 5;
-        int take = 7;
+        const int skip = 5;
+        const int take = 7;
 
         var request = new GetCharactersRequest(skip, take);
 
@@ -91,42 +91,70 @@ public sealed class InMemoryCharactersStoreUnitTests
     public async Task RegisterCharacterAsync_ClearsCache_AndTriggersFreshFetch()
     {
         // Arrange
-        var characters = CharacterFaker.Create().Generate(3);
+        const int initialCharacterCount = 10;
+        var characters = CharacterFaker.Create().Generate(initialCharacterCount);
+        var expectedDate = DateTimeOffset.UtcNow;
 
-        var fallback = new Mock<ICharacterStore>();
+        const int expectedId = 42;
 
-        fallback
+        var fallbackStore = new Mock<ICharacterStore>();
+
+        fallbackStore
             .Setup(x => x.GetCharactersAsync(It.IsAny<GetCharactersRequest>()))
             .ReturnsAsync((GetCharactersRequest req) =>
             {
                 var page = characters.Skip(req.Skip).Take(req.Take).ToList();
+
                 return new GetCharactersResponse(page, DataSource.Database, characters.Count);
             });
 
-        fallback
-            .Setup(x => x.RegisterCharacterAsync(It.IsAny<RegisterCharacterRequest>()))
-            .Callback(() => characters.Add(CharacterFaker.Create().Generate()))
-            .Returns(Task.CompletedTask);
+        fallbackStore
+            .Setup(x => x.RegisterCharacterAsync(
+                It.IsAny<RegisterCharacterRequest>(),
+                It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync((RegisterCharacterRequest x, DateTimeOffset now) =>
+            {
+                var newCharacter = new Character(expectedId, x.Name, x.Species, x.Status, x.Gender, now, x.ImageUrl);
+                characters.Add(newCharacter);
 
-        var store = new InMemoryCharacterStore(fallback.Object, _cache, _options);
+                return expectedId;
+            });
+
+        var inMemoryStore = new InMemoryCharacterStore(fallbackStore.Object, _cache, _options);
 
         var getCharactersRequest = new GetCharactersRequest(0, 100);
-        var first = await store.GetCharactersAsync(getCharactersRequest);
+        var first = await inMemoryStore.GetCharactersAsync(getCharactersRequest);
 
         // Act
         var registerRequest = RegisterCharacterRequestFaker.Create().Generate();
+        await inMemoryStore.RegisterCharacterAsync(registerRequest, expectedDate);
 
-        await store.RegisterCharacterAsync(registerRequest);
-        var second = await store.GetCharactersAsync(getCharactersRequest);
+        var second = await inMemoryStore.GetCharactersAsync(getCharactersRequest);
 
         // Assert
-        fallback.Verify(x => x.RegisterCharacterAsync(It.IsAny<RegisterCharacterRequest>()), Times.Once);
+        fallbackStore.Verify(x => x.RegisterCharacterAsync(
+            It.IsAny<RegisterCharacterRequest>(),
+            It.IsAny<DateTimeOffset>()), Times.Once);
 
-        fallback.Verify(x => x.GetCharactersAsync(It.IsAny<GetCharactersRequest>()), Times.Exactly(2));
+        fallbackStore.Verify(x => x.GetCharactersAsync(It.IsAny<GetCharactersRequest>()), Times.Exactly(2));
 
-        first.TotalCount.Should().Be(3);
-        second.TotalCount.Should().Be(4);
+        first.TotalCount.Should().Be(initialCharacterCount);
+        second.TotalCount.Should().Be(initialCharacterCount + 1);
+        second.Characters.Should().HaveCount(initialCharacterCount + 1);
 
-        second.Characters.Should().HaveCount(4);
+        var addedCharacter = second.Characters.Last();
+        addedCharacter.Id.Should().Be(expectedId);
+        addedCharacter.Name.Should().Be(registerRequest.Name);
+        addedCharacter.Species.Should().Be(registerRequest.Species);
+        addedCharacter.Status.Should().Be(registerRequest.Status);
+        addedCharacter.Gender.Should().Be(registerRequest.Gender);
+        addedCharacter.ImageUrl.Should().Be(registerRequest.ImageUrl);
+        addedCharacter.Created.Should().Be(expectedDate);
+
+        second.DataSource.Should().Be(DataSource.Database);
+
+        fallbackStore.Verify(x => x.RegisterCharacterAsync(
+            It.Is<RegisterCharacterRequest>(r => r.Name == registerRequest.Name),
+            expectedDate), Times.Once);
     }
 }

@@ -26,7 +26,7 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
     }
 
     [HttpPut]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Character>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterCharacter([FromBody] RegisterCharacterDto characterDto)
     {
@@ -44,8 +44,8 @@ public sealed class CharacterController(ICharacterManager characterManager) : Co
             characterDto.Gender,
             imageUrl);
 
-        await characterManager.RegisterCharacterAsync(request);
-        
-        return NoContent();
+        var character = await characterManager.RegisterCharacterAsync(request);
+
+        return Created(uri: default(Uri?), value: character);
     }
 }

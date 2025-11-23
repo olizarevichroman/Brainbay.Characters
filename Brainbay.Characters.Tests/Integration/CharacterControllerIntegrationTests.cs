@@ -57,7 +57,7 @@ public sealed class CharacterControllerIntegrationTests : IClassFixture<CustomWe
     }
 
     [Fact]
-    public async Task RegisterCharacter_RequestIsValid_ShouldReturnNoContent()
+    public async Task RegisterCharacter_RequestIsValid_ShouldReturnCreated()
     {
         // Arrange
         var validRequest = _registerDtoFaker.Generate();
@@ -69,7 +69,7 @@ public sealed class CharacterControllerIntegrationTests : IClassFixture<CustomWe
             TestContext.Current.CancellationToken);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]

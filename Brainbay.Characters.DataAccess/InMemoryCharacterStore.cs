@@ -15,11 +15,13 @@ internal sealed class InMemoryCharacterStore(
 
     private CharacterCacheOptions CacheOptions => cacheOptions.Value;
 
-    public async Task RegisterCharacterAsync(RegisterCharacterRequest request)
+    public async Task<int> RegisterCharacterAsync(RegisterCharacterRequest request, DateTimeOffset now)
     {
-        await fallbackStore.RegisterCharacterAsync(request);
+        var result = await fallbackStore.RegisterCharacterAsync(request, now);
         
         memoryCache.Remove(CharactersCacheKey);
+
+        return result;
     }
 
     public async Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request)

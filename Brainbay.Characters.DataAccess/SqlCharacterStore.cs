@@ -1,14 +1,15 @@
 using System.Collections.Immutable;
+using Brainbay.Characters.DataAccess.Extensions;
 using Brainbay.Characters.DataAccess.Sql;
 using Brainbay.Characters.Contracts;
 using Dapper;
 
 namespace Brainbay.Characters.DataAccess;
 
-internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, TimeProvider timeProvider)
+internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory)
     : ICharacterStore
 {
-    public Task RegisterCharacterAsync(RegisterCharacterRequest request) =>
+    public Task<int> RegisterCharacterAsync(RegisterCharacterRequest request, DateTimeOffset now) =>
         connectionFactory.TryAsync(async connection =>
         {
             var parameters = new
@@ -17,11 +18,11 @@ internal sealed class SqlCharacterStore(IDbConnectionFactory connectionFactory, 
                 Species = request.Species,
                 Status = request.Status,
                 Gender = request.Gender,
-                CreatedAt = timeProvider.GetUtcNow(),
+                CreatedAt = now,
                 ImageUrl = request.ImageUrl.ToString(),
             };
 
-            await connection.ExecuteAsync(Queries.RegisterCharacter, param: parameters);
+            return await connection.QuerySingleAsync<int>(Queries.RegisterCharacter, param: parameters);
         });
 
     public async Task<GetCharactersResponse> GetCharactersAsync(GetCharactersRequest request)
