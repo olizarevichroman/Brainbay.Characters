@@ -28,7 +28,8 @@
     environment:
       DATASOURCES:MYSQL:SERVER: "database"
       DATASOURCES:MYSQL:DATABASE: "brainbay"
-      
+      ASPNETCORE_ENVIRONMENT: "Development"
+
   database:
     container_name: database
     image: mysql:8.0
@@ -40,7 +41,7 @@
     environment:
       MYSQL_ROOT_PASSWORD: "password"
       MYSQL_DATABASE: "brainbay"
-      
+
 volumes:
   database:
     driver: local

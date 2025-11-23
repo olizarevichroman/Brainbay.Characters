@@ -43,7 +43,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-app.MapControllers();
+app
+    .MapControllers()
+    .DisableAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

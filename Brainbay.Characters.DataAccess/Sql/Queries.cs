@@ -18,7 +18,7 @@ internal static class Queries
         .AppendLine("VALUES (@Name, @Species, @Status, @Gender, @CreatedAt, @ImageUrl)")
         .AppendLine("ON DUPLICATE KEY UPDATE Status = VALUES(Status), Gender = VALUES(Gender), ImageUrl = VALUES(ImageUrl), Species = VALUES(Species);")
         .AppendLine()
-        .AppendLine("SELECT @LAST_INSERT_ID();")
+        .AppendLine("SELECT LAST_INSERT_ID();")
         .ToString();
     
     public const string CleanupCharacters = "TRUNCATE TABLE Characters;";
